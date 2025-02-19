@@ -1,0 +1,12 @@
+@keyframes counterOrbit {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.tab {
+    padding: 5%;
+    border-radius: 10px;
+    background-color: lightblue;
+    position: absolute;
+    animation: counterOrbit 45s linear infinite;
+}

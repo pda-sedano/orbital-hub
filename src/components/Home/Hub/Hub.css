@@ -1,0 +1,14 @@
+@keyframes rotate {
+    0% {transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.rotating {
+    width: 40vw;
+    height: 40vw;
+    animation: rotate 30s linear infinite;
+    position: absolute;
+    top: 50vh;
+    left: 50vw;
+    /*transform: translate(-50vw, -50vh)*/
+}

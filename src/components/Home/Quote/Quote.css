@@ -1,0 +1,10 @@
+.text {
+    font-size: 2em;
+    color: skyblue;
+}
+
+.author {
+    font-style: italic;
+    font-size: 1.5em;
+    color: deepskyblue;
+}
