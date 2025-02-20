@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.01c2a85d.css",
+    "main.js": "/static/js/main.b046fe31.js",
+    "static/js/787.cf601850.chunk.js": "/static/js/787.cf601850.chunk.js",
+    "static/media/milky_way.png": "/static/media/milky_way.0f2f171a68f5397d47f8.png",
+    "static/media/hubbleDeepField.jpg": "/static/media/hubbleDeepField.89256e8312d720def6cf.jpg",
+    "index.html": "/index.html",
+    "main.01c2a85d.css.map": "/static/css/main.01c2a85d.css.map",
+    "main.b046fe31.js.map": "/static/js/main.b046fe31.js.map",
+    "787.cf601850.chunk.js.map": "/static/js/787.cf601850.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.01c2a85d.css",
+    "static/js/main.b046fe31.js"
+  ]
+}
