@@ -1,17 +1,17 @@
 import './App.css';
 import Homepage from "../Home/Homepage/Homepage";
 import About from '../About/About';
-import { BrowserRouter, Routes, Route } from "react-router";
+import { HashRouter, Routes, Route } from "react-router";
 
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
         <Routes>
             <Route path='/' element={<Homepage />} />
             <Route path='/about-me' element={<About />} />
         </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
