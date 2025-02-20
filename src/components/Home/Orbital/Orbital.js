@@ -41,7 +41,7 @@ const Orbital = () => {
     );
 
     return (
-        <div>
+        <div className='orbitalHolder'>
             <div className='orbital'>
                 {tabs}
             </div>

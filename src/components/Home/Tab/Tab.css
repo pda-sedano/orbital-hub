@@ -10,3 +10,7 @@
     position: absolute;
     animation: counterOrbit 45s linear infinite;
 }
+
+.orbital:hover .tab {
+    animation-play-state: paused;
+}
