@@ -17,6 +17,7 @@ const Row = ({ link, path }) => {
             </Link>
         );
     }
+    if (!link.href) return <div className="index__item">{inner}</div>;
     return (
         <a className="index__item" href={link.href} target="_blank" rel="noopener noreferrer">
             {inner}

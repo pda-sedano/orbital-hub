@@ -2,15 +2,28 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import Hub from '../Hub/Hub';
 import Tab from '../Tab/Tab';
-import { orbiting, orbitPath } from '../../../data/links';
+import { orbiting, orbitPath, isGroup } from '../../../data/links';
+import {
+    TILT_DEG,
+    RING_RADII,
+    GALAXY_RADIUS,
+    geometryFor,
+    project,
+    angleAt,
+    halfOrbitPath,
+    buildBodies,
+    usedRings as ringsOf,
+} from './geometry';
+import { MINI_SCALE } from '../Tab/MiniOrbit';
 import './Orbital.css';
 
+export { angleAt, buildBodies }; // re-exported for tests
+
 /*
- * A small orrery. Every orbit lies in the same inclined plane as the galaxy,
- * so circles project to ellipses with minor/major ratio INCLINATION. Bodies
- * on the far half pass behind the galaxy; bodies on the near half pass in front.
+ * A small orrery (geometry in ./geometry.js). Bodies on the far half of their
+ * orbit pass behind the galaxy; bodies on the near half pass in front.
  *
- * Periods follow Kepler's third law (T ∝ a^1.5), so inner bodies move faster.
+ * Groups show a mini orbit of their own children in place of a star.
  *
  * Groups open a new level: the current bodies are replaced by the group's
  * children, which spiral out of the galaxy, and a back arrow appears at the core.
@@ -19,77 +32,11 @@ import './Orbital.css';
  * focused). Each body keeps an angular offset that is added to its orbit.
  */
 
-const INCLINATION = 0.42; // cos of the viewing angle; 1 = face-on
-const TILT_DEG = -12; // rotation of the whole plane on screen
-const RING_RADII = [0.54, 0.73, 0.92]; // semi-major axes, as fractions of the stage half-width
-const GALAXY_RADIUS = 0.44;
-const INNER_PERIOD_S = 70;
 const EMERGE_S = 1.1; // how long new bodies take to spiral out to their orbits
 const DRAG_THRESHOLD_PX = 5; // movement before a press becomes a drag instead of a click
 const KEY_STEP = Math.PI / 18; // 10° per arrow-key press
 
-// On narrow screens, pull the outer rings in so labels at the extremes stay on screen,
-// and tip the plane toward the viewer to use the height.
-const COMPACT_BELOW = 340; // stage half-width in px
-const COMPACT_SCALE = 0.84;
-const COMPACT_INCLINATION = 0.54;
-
-const geometryFor = (halfWidth) =>
-    halfWidth < COMPACT_BELOW
-        ? { scale: COMPACT_SCALE, incl: COMPACT_INCLINATION }
-        : { scale: 1, incl: INCLINATION };
-
-const tilt = (TILT_DEG * Math.PI) / 180;
-const cosT = Math.cos(tilt);
-const sinT = Math.sin(tilt);
-
-const project = (a, incl, theta) => {
-    const X = a * Math.cos(theta);
-    const Y = a * incl * Math.sin(theta);
-    return {
-        x: X * cosT - Y * sinT,
-        y: X * sinT + Y * cosT,
-        depth: Math.sin(theta), // +1 nearest the viewer, -1 farthest
-    };
-};
-
-// Inverse of project(): the orbital angle of the point on the orbit nearest
-// screen offset (x, y) from the centre. Undo the tilt, stretch the ellipse back
-// to a circle, then take the angle.
-export const angleAt = (x, y, incl) => {
-    const X = x * cosT + y * sinT;
-    const Y = -x * sinT + y * cosT;
-    return Math.atan2(Y / incl, X);
-};
-
-// SVG path for half an orbit: the near half (front) or the far half (back).
-const halfOrbitPath = (a, incl, front) => {
-    const b = a * incl;
-    const sweep = front ? 1 : 0;
-    return `M ${a} 0 A ${a} ${b} 0 0 ${sweep} ${-a} 0`;
-};
-
 const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
-
-// Put each link on a ring, spread siblings evenly, stagger rings so they don't start aligned.
-export const buildBodies = (items) => {
-    const placed = items.map((link, i) => ({
-        link,
-        ring: Math.min(link.ring ?? i % RING_RADII.length, RING_RADII.length - 1),
-    }));
-    return placed.map(({ link, ring }) => {
-        const siblings = placed.filter((p) => p.ring === ring);
-        const index = siblings.findIndex((p) => p.link === link);
-        const a = RING_RADII[ring];
-        return {
-            link,
-            ring,
-            a,
-            phase: (index / siblings.length) * 2 * Math.PI + ring * 2.1 + 0.6,
-            omega: (2 * Math.PI) / (INNER_PERIOD_S * Math.pow(a / RING_RADII[0], 1.5)),
-        };
-    });
-};
 
 // Remember whether the last interaction was the keyboard, so focus is only moved
 // for keyboard users (moving it for mouse users would pause the orbits).
@@ -128,7 +75,14 @@ const Orbital = ({ trail = [] }) => {
     const parentPath = orbitPath(ids.slice(0, -1));
     const parentTitle = depth > 1 ? trail[depth - 2].title : 'the hub';
 
-    const bodies = useMemo(() => buildBodies(items), [items]);
+    // Groups carry their children's layout too, for the mini orbit drawn on them.
+    const bodies = useMemo(
+        () =>
+            buildBodies(items).map((b) =>
+                isGroup(b.link) ? { ...b, mini: buildBodies(b.link.children) } : b
+            ),
+        [items]
+    );
     const sim = useRef({ t: 0, emerge: 0, speed: 1, level: null, cameFrom: null });
     const offsets = useRef({}); // body id -> extra angle from dragging, for this level
     const drag = useRef(null); // the press or drag in progress, if any
@@ -218,6 +172,19 @@ const Orbital = ({ trail = [] }) => {
                 el.style.setProperty('--near', ((z + 1) / 2).toFixed(3));
                 el.style.setProperty('--emerge', e.toFixed(3));
                 el.dataset.side = z >= 0 ? 'front' : 'back';
+
+                // A group's mini orbit runs on the same clock as the full view.
+                if (body.mini) {
+                    const dots = el.querySelectorAll('.mini__body');
+                    body.mini.forEach((m, j) => {
+                        const p = project(m.a * MINI_SCALE, incl, m.phase + m.omega * s.t);
+                        const dot = dots[j];
+                        if (!dot) return;
+                        dot.setAttribute('cx', p.x.toFixed(2));
+                        dot.setAttribute('cy', p.y.toFixed(2));
+                        dot.style.opacity = (0.45 + 0.275 * (p.depth + 1)).toFixed(2);
+                    });
+                }
             });
         };
 
@@ -310,7 +277,7 @@ const Orbital = ({ trail = [] }) => {
     const R = halfWidth;
     const { scale, incl } = geometryFor(R);
     const svgBox = `${-R} ${-R} ${2 * R} ${2 * R}`;
-    const usedRings = [...new Set(bodies.map((b) => b.ring))].sort();
+    const usedRings = ringsOf(bodies);
 
     const orbitsSvg = (front) => (
         <svg
@@ -390,6 +357,8 @@ const Orbital = ({ trail = [] }) => {
                         >
                             <Tab
                                 link={body.link}
+                                mini={body.mini}
+                                incl={incl}
                                 groupPath={orbitPath([...ids, body.link.id])}
                                 active={active === body.link.id}
                                 onActivate={() => setActive(body.link.id)}

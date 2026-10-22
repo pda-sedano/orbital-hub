@@ -1,0 +1,29 @@
+.mini {
+    display: block;
+    overflow: visible;
+    transition: transform 300ms ease;
+}
+
+.mini__ring {
+    fill: none;
+    stroke: rgba(243, 197, 138, 0.42);
+    stroke-width: 0.8;
+    transition: stroke 300ms ease;
+}
+
+.mini__core {
+    fill: #fff3e0;
+    filter: drop-shadow(0 0 2px rgba(243, 197, 138, 0.95)) drop-shadow(0 0 6px rgba(243, 197, 138, 0.45));
+}
+
+.mini__body {
+    fill: #f6e3c4;
+}
+
+.tab--active .mini {
+    transform: scale(1.18);
+}
+
+.tab--active .mini__ring {
+    stroke: rgba(243, 197, 138, 0.75);
+}

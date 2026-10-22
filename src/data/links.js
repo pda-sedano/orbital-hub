@@ -2,6 +2,7 @@
 //
 // Each entry is one of:
 //   a link      `to` (an internal route) or `href` (an external URL, opens in a new tab)
+//   a label     neither: shown in the orrery, but not clickable
 //   a group     `children`: a list of entries. Clicking a group opens a new orbit
 //               level showing its children; groups can nest to any depth.
 //
@@ -40,6 +41,30 @@ export const orbiting = [
         href: 'https://github.com/pda-sedano/lambda-interpreter-web',
         ring: 2,
     },
+
+    // TEST: exercises nesting and the mini orbits. Safe to delete.
+    // Its mini orbit should show two dots on the inner ring and one on the middle
+    // ring, matching what you see after clicking it.
+    {
+        id: 'test-system',
+        title: 'Test system',
+        ring: 2,
+        children: [
+            { id: 'alpha', title: 'Alpha', ring: 0 },
+            { id: 'beta', title: 'Beta', ring: 0 },
+            {
+                id: 'gamma',
+                title: 'Gamma system',
+                ring: 1,
+                children: [
+                    { id: 'gamma-i', title: 'Gamma I', ring: 0 },
+                    { id: 'gamma-ii', title: 'Gamma II', ring: 1 },
+                    { id: 'gamma-iii', title: 'Gamma III', ring: 2 },
+                    { id: 'gamma-iv', title: 'Gamma IV', ring: 2 },
+                ],
+            },
+        ],
+    },
 ];
 
 export const header_links = [
@@ -60,7 +85,8 @@ export const isGroup = (link) => Array.isArray(link.children) && link.children.l
 
 export const hostOf = (link) => {
     if (isGroup(link)) return `${link.children.length} links`;
-    return link.href ? new URL(link.href).host.replace(/^www\./, '') : 'this site';
+    if (link.href) return new URL(link.href).host.replace(/^www\./, '');
+    return link.to ? 'this site' : '';
 };
 
 // Route for an orbit level, given the ids of the groups from the top down.

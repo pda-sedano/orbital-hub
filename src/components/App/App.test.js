@@ -4,7 +4,7 @@ import App from './App';
 import Index from '../Home/Index/Index';
 import Quote from '../Home/Quote/Quote';
 import { step } from '../Home/backgrounds/Life/Life';
-import { buildBodies, angleAt } from '../Home/Orbital/Orbital';
+import { buildBodies, angleAt, usedRings } from '../Home/Orbital/geometry';
 import { orbiting, isGroup, resolveTrail, allLinks } from '../../data/links';
 
 const renderAt = (hash) => {
@@ -12,10 +12,9 @@ const renderAt = (hash) => {
     return render(<App />);
 };
 
+// Titles of the bodies currently in orbit (links or not)
 const orreryLinks = () =>
-    within(document.querySelector('.orrery__bodies'))
-        .getAllByRole('link')
-        .map((a) => a.getAttribute('aria-label'));
+    [...document.querySelectorAll('.orrery__body .tab__title--full')].map((t) => t.textContent);
 
 describe('hub', () => {
     test('renders the title and every top-level body', () => {
@@ -35,11 +34,17 @@ describe('hub', () => {
         );
         const index = screen.getByRole('region', { name: 'Everything in orbit' });
         for (const link of allLinks()) {
-            expect(within(index).getByRole('link', { name: new RegExp(link.title) })).toBeInTheDocument();
+            const row = within(index).getByText(link.title).closest('.index__item');
+            // entries with a destination are links; bare labels aren't
+            expect(row.tagName).toBe(link.href || link.to ? 'A' : 'DIV');
         }
     });
 
-    test('opening a group shows its children, and the back arrow returns', () => {
+    // These need at least one group in links.js; they're skipped if there isn't one.
+    const anyGroup = orbiting.find(isGroup);
+    const groupTest = anyGroup ? test : test.skip;
+
+    groupTest('opening a group shows its children, and the back arrow returns', () => {
         const group = orbiting.find(isGroup);
         renderAt('#/');
 
@@ -49,11 +54,7 @@ describe('hub', () => {
         fireEvent.click(groupLink);
 
         expect(window.location.hash).toBe(`#/orbit/${group.id}`);
-        expect(orreryLinks()).toEqual(
-            group.children.map((c) =>
-                isGroup(c) ? expect.stringContaining(c.title) : c.title
-            )
-        );
+        expect(orreryLinks()).toEqual(group.children.map((c) => c.title));
         expect(screen.getByRole('navigation', { name: 'Orbit level' })).toHaveTextContent(group.title);
 
         fireEvent.click(screen.getByRole('link', { name: 'Back to the hub' }));
@@ -61,12 +62,43 @@ describe('hub', () => {
         expect(orreryLinks()).toHaveLength(orbiting.length);
     });
 
-    test('Escape goes up a level', () => {
+    groupTest('Escape goes up a level', () => {
         const group = orbiting.find(isGroup);
         renderAt(`#/orbit/${group.id}`);
         expect(screen.getByRole('link', { name: 'Back to the hub' })).toBeInTheDocument();
         fireEvent.keyDown(window, { key: 'Escape' });
         expect(window.location.hash).toBe('#/');
+    });
+
+    groupTest('a group draws a mini orbit matching its expanded view', () => {
+        const group = orbiting.find(isGroup);
+        renderAt('#/');
+        const link = within(document.querySelector('.orrery__bodies')).getByRole('link', {
+            name: new RegExp(group.title),
+        });
+        const mini = link.querySelector('svg.mini');
+        const expected = buildBodies(group.children);
+
+        // one dot per child, and one ring per ring the children use
+        expect(mini.querySelectorAll('.mini__body')).toHaveLength(group.children.length);
+        expect(mini.querySelectorAll('.mini__ring')).toHaveLength(usedRings(expected).length);
+
+        // ...and the full view uses the same rings once opened
+        fireEvent.click(link);
+        expect(document.querySelectorAll('.orbits--back .orbit')).toHaveLength(
+            usedRings(expected).length
+        );
+        expect(document.querySelectorAll('.orrery__body')).toHaveLength(group.children.length);
+    });
+
+    test('nested groups resolve two levels deep', () => {
+        const deep = orbiting
+            .filter(isGroup)
+            .flatMap((g) => g.children.filter(isGroup).map((c) => [g.id, c.id]))[0];
+        if (!deep) return; // nothing nested two deep in links.js right now
+        renderAt(`#/orbit/${deep.join('/')}`);
+        expect(screen.getByRole('link', { name: /^Back to / })).toBeInTheDocument();
+        expect(window.location.hash).toBe(`#/orbit/${deep.join('/')}`);
     });
 
     test('unknown levels fall back to the top', () => {

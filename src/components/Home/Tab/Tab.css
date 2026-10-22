@@ -7,8 +7,11 @@
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    transform: translate(-50%, -5px) scale(calc(0.86 + 0.14 * var(--near, 1)));
-    transform-origin: 50% 5px;
+    /* --anchor: distance from the top of the tab to the centre of its star or mini orbit,
+       which is the point that sits exactly on the body's orbit */
+    --anchor: 5px;
+    transform: translate(-50%, calc(-1 * var(--anchor))) scale(calc(0.86 + 0.14 * var(--near, 1)));
+    transform-origin: 50% var(--anchor);
     opacity: calc((0.5 + 0.5 * var(--near, 1)) * var(--emerge, 1));
     text-decoration: none;
     color: var(--starlight);
@@ -36,17 +39,9 @@
     transition: box-shadow 300ms ease, transform 300ms ease;
 }
 
-/* A ring around the star marks a group that opens its own orbit level */
-.tab--group .tab__star::after {
-    content: '';
-    position: absolute;
-    left: -10px;
-    top: -2px;
-    width: 30px;
-    height: 14px;
-    border: 1.25px solid rgba(243, 197, 138, 0.85);
-    border-radius: 50%;
-    transform: rotate(-12deg);
+.tab--group {
+    --anchor: 14px; /* MINI_ANCHOR in MiniOrbit.js */
+    gap: 6px;
 }
 
 .tab__label {
