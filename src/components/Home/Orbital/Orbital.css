@@ -1,30 +1,186 @@
-.orbital {
+.orrery {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Breadcrumb for nested levels. Always takes up its line, so the stage doesn't jump. */
+.orrery__trail {
+    min-height: 2.2rem;
+    padding: 0 var(--gutter);
+    text-align: center;
+}
+
+.orrery__trail ol {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    animation: orbitsIn 600ms ease-out both;
+}
+
+.orrery__trail li {
+    font-size: 0.9375rem;
+    color: var(--dust);
+}
+
+.orrery__trail li + li::before {
+    content: '/';
+    margin: 0 0.6em;
+    color: var(--dust-dim);
+}
+
+.orrery__trail a {
+    color: var(--dust);
+    text-decoration: none;
+    transition: color 250ms ease;
+}
+
+.orrery__trail a:hover {
+    color: var(--core);
+}
+
+.orrery__here {
+    font-family: var(--serif);
+    font-variation-settings: var(--serif-text);
+    font-weight: 500;
+    font-size: var(--step-1) !important;
+    color: var(--starlight) !important;
+}
+
+.orrery__stage {
+    /* --R is the stage half-width in px, set from JS */
+    position: relative;
+    width: min(100%, 1080px);
+    height: calc(var(--R) * 0.92 + 80px);
+}
+
+@media (max-width: 680px) {
+    .orrery__here {
+        font-size: var(--step-0) !important;
+    }
+    .orrery__trail li {
+        font-size: var(--step--1);
+    }
+    .orrery__stage {
+        height: calc(var(--R) * 1.05 + 56px);
+    }
+}
+
+.orbits {
     position: absolute;
-    width: 40vw;
-    height: 40vw;
-    top: 50%;
     left: 50%;
-    border-radius: 50%;
-    /*background-color: white;*/
-    /*align-content: center;*/
+    top: 50%;
+    transform: translate(-50%, -50%);
+    overflow: visible;
+    pointer-events: none;
+    animation: orbitsIn 900ms ease-out both;
+}
+
+@keyframes orbitsIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.orbits--back {
     z-index: 1;
-    animation: orbit 45s linear infinite; /* Rotate continuously */
 }
 
-.orbital:hover {
-    animation-play-state: paused;
+.orbits--front {
+    z-index: 3;
 }
 
-/*.tabContainer {*/
-/*    position: absolute;*/
-/*}*/
-
-@keyframes orbit {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(-360deg); }
+.orbit {
+    fill: none;
+    stroke: var(--orbit);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition: stroke 400ms ease;
 }
 
-/*.orbital:hover {*/
-/*    animation: none;*/
-/*    transform: translate(-50%, -50%);*/
-/*}*/
+.orbits--back .orbit {
+    stroke-dasharray: 2 5;
+}
+
+.orbit--lit {
+    stroke: var(--orbit-lit);
+}
+
+/* Back arrow, sitting on the galactic core */
+.orrery__back {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 5;
+    width: 52px;
+    height: 52px;
+    margin: -26px 0 0 -26px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--starlight);
+    background: radial-gradient(circle, rgba(4, 6, 11, 0.55), rgba(4, 6, 11, 0.25));
+    border: 1px solid rgba(243, 197, 138, 0.45);
+    box-shadow: 0 0 24px rgba(243, 197, 138, 0.18);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    transition: color 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 250ms ease;
+    animation: backIn 700ms 150ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+.orrery__back:hover,
+.orrery__back:focus-visible {
+    color: var(--core);
+    border-color: var(--core);
+    box-shadow: 0 0 32px rgba(243, 197, 138, 0.35);
+    transform: scale(1.06);
+}
+
+@keyframes backIn {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.orrery__bodies {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.orrery__body {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    z-index: 4;
+    will-change: transform;
+}
+
+/* Dragging: keep the body above everything and show the grab */
+.orrery__body[data-dragging='true'] {
+    z-index: 6;
+}
+
+.orrery__body[data-dragging='true'] .tab {
+    cursor: grabbing;
+    opacity: var(--emerge, 1); /* full strength even on the far side */
+}
+
+/* Bodies on the far side pass behind the galaxy */
+.orrery__body[data-side='back'] {
+    z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .orbits,
+    .orrery__back,
+    .orrery__trail ol {
+        animation: none;
+    }
+}

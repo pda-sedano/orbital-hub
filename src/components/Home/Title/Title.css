@@ -1,5 +1,50 @@
-.title {
-    font-size: 4em;
-    color: dodgerblue;
-    text-align: center;
+.masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px 48px;
+    flex-wrap: wrap;
+    padding: clamp(28px, 6vh, 64px) var(--gutter) 0;
+}
+
+.masthead__name {
+    margin: 0;
+    font-family: var(--serif);
+    font-variation-settings: var(--serif-display);
+    font-size: var(--step-3);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+}
+
+.masthead__tagline {
+    margin: 0.9em 0 0;
+    max-width: 34ch;
+    color: var(--dust);
+    font-size: var(--step-0);
+    line-height: 1.5;
+}
+
+.masthead__nav {
+    display: flex;
+    gap: 28px;
+    padding-top: 0.6rem;
+    font-size: 0.9375rem;
+}
+
+.masthead__nav a {
+    color: var(--starlight);
+    text-decoration: none;
+    background-image: linear-gradient(var(--core), var(--core));
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 2px;
+    transition: background-size 300ms ease, color 300ms ease;
+}
+
+.masthead__nav a:hover,
+.masthead__nav a:focus-visible {
+    color: var(--core);
+    background-size: 100% 1px;
 }

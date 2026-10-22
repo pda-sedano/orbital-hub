@@ -1,3 +1,21 @@
 .gameboard {
-    position: fixed;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    opacity: 0;
+    animation: fieldIn 2.4s ease-out 0.2s forwards;
+}
+
+@keyframes fieldIn {
+    to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gameboard {
+        animation: none;
+        opacity: 1;
+    }
 }

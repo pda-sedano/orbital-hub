@@ -1,15 +1,19 @@
-import img from './images/milky_way.png'
+import galaxy from './images/galaxy.webp';
 import './Hub.css';
 
-const Hub = () => {
+// The galaxy at the centre of the orrery, inclined to match the orbital plane.
+// Dimmed on nested levels so the back arrow on its core stands out.
+const Hub = ({ radius, dimmed = false }) => {
     return (
-        <div>
-            <img
-                src={img}
-                alt='Rotating galaxy. Image credit Jean Beaufort,
-                https://www.publicdomainpictures.net/en/view-image.php?image=180438&picture=milky-way'
-                className='rotating'
-            />
+        <div
+            className={`hub${dimmed ? ' hub--dimmed' : ''}`}
+            style={{ '--r': `${radius}px` }}
+            aria-hidden="true"
+        >
+            <div className="hub__glow" />
+            <div className="hub__plane">
+                <img src={galaxy} alt="" className="hub__galaxy" draggable="false" />
+            </div>
         </div>
     );
 };

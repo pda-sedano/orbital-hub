@@ -1,0 +1,19 @@
+.homepage {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 2vh, 24px);
+    padding-bottom: 48px;
+}
+
+.homepage .quotes {
+    margin-bottom: clamp(48px, 10vh, 112px);
+}
+
+.homepage__footer {
+    max-width: 880px;
+    width: 100%;
+    margin: 56px auto 0;
+    padding: 0 var(--gutter);
+    font-size: var(--step--1);
+    color: var(--dust-dim);
+}

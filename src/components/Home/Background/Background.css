@@ -1,4 +1,17 @@
 .background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Softens the field toward the edges and behind the masthead so text stays legible */
+.background::after {
+    content: '';
     position: absolute;
-    z-index: -1
+    inset: 0;
+    background:
+        radial-gradient(ellipse 60% 45% at 18% 12%, rgba(4, 6, 11, 0.75), transparent 70%),
+        radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(4, 6, 11, 0.7) 100%);
 }

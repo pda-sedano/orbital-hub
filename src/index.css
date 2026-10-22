@@ -1,13 +1,76 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+    /* Palette: deep field, starlight, interstellar dust, galactic core */
+    --void: #04060b;
+    --starlight: #ece8df;
+    --dust: #98a1b8;
+    --dust-dim: #5f6880;
+    --core: #f3c58a;
+    --orbit: rgba(170, 186, 230, 0.28);
+    --orbit-lit: rgba(243, 197, 138, 0.55);
+
+    --serif: 'Bodoni Moda Variable', 'Didot', 'Bodoni 72', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /*
+     * Bodoni Moda's optical-size axis: high values give very fine hairlines that
+     * break up at display sizes and on dark backgrounds. Pinning it low keeps the
+     * Bodoni shapes with sturdier thin strokes.
+     */
+    --serif-display: 'opsz' 12; /* headings */
+    --serif-text: 'opsz' 9; /* quotes, ledes and other text-sized serif */
+
+    /* Type scale (perfect fourth) */
+    --step--1: 0.8125rem;
+    --step-0: 1rem;
+    --step-1: 1.333rem;
+    --step-2: 1.777rem;
+    --step-3: clamp(2.2rem, 1.4rem + 3.4vw, 4.2rem);
+
+    --gutter: clamp(16px, 4vw, 56px);
+    color-scheme: dark;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--void);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--void);
+    color: var(--starlight);
+    font-family: var(--sans);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+a {
+    color: inherit;
+}
+
+:focus-visible {
+    outline: 1.5px solid var(--core);
+    outline-offset: 4px;
+    border-radius: 2px;
+}
+
+::selection {
+    background: rgba(243, 197, 138, 0.3);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }

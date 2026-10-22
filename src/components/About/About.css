@@ -1,0 +1,112 @@
+.about {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: clamp(28px, 6vh, 64px) var(--gutter) 96px;
+}
+
+/* A reading page: hold the background further back than on the hub */
+.about::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(4, 6, 11, 0.72);
+    pointer-events: none;
+}
+
+.about__back {
+    display: inline-block;
+    color: var(--dust);
+    font-size: 0.9375rem;
+    text-decoration: none;
+    padding: 4px 0;
+    transition: color 250ms ease;
+}
+
+.about__back::before {
+    content: '\2190\00a0';
+}
+
+.about__back:hover {
+    color: var(--core);
+}
+
+.about__title {
+    margin: 0.6em 0 0.5em;
+    font-family: var(--serif);
+    font-variation-settings: var(--serif-display);
+    font-weight: 500;
+    font-size: var(--step-3);
+    line-height: 1;
+    letter-spacing: -0.015em;
+}
+
+.about__body {
+    max-width: 62ch;
+    color: #d6d2c9;
+}
+
+.about__body p {
+    margin: 0 0 1.1em;
+}
+
+.about__lede {
+    font-family: var(--serif);
+    font-variation-settings: var(--serif-text);
+    font-weight: 500;
+    font-size: var(--step-1);
+    line-height: 1.45;
+    color: var(--starlight);
+}
+
+.about__body h2 {
+    margin: 2.4em 0 0.8em;
+    font-family: var(--serif);
+    font-variation-settings: var(--serif-display);
+    font-weight: 500;
+    font-size: var(--step-2);
+    line-height: 1.2;
+    color: var(--starlight);
+}
+
+.about__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.about__list li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.85em 0;
+    border-top: 1px solid rgba(152, 161, 184, 0.22);
+}
+
+.about__list li:last-child {
+    border-bottom: 1px solid rgba(152, 161, 184, 0.22);
+}
+
+.about__list span {
+    color: var(--dust);
+}
+
+.about__body a {
+    color: var(--starlight);
+    text-decoration-color: rgba(243, 197, 138, 0.5);
+    text-underline-offset: 3px;
+    transition: color 250ms ease;
+}
+
+.about__body a:hover {
+    color: var(--core);
+}
+
+.about__profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}

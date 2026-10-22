@@ -1,11 +1,22 @@
+import { profiles } from '../../../data/links';
 import './Title.css';
 
-const Title = ({text}) => {
+const Title = ({ name, tagline }) => {
     return (
-        <div className='title'>
-            {text}
-        </div>
+        <header className="masthead">
+            <div className="masthead__id">
+                <h1 className="masthead__name">{name}</h1>
+                <p className="masthead__tagline">{tagline}</p>
+            </div>
+            <nav className="masthead__nav" aria-label="Profiles">
+                {profiles.map((p) => (
+                    <a key={p.id} href={p.href} target="_blank" rel="noopener noreferrer">
+                        {p.title}
+                    </a>
+                ))}
+            </nav>
+        </header>
     );
-}
+};
 
 export default Title;

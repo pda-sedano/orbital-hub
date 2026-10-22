@@ -1,16 +1,112 @@
-@keyframes counterOrbit {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
 .tab {
-    padding: 5%;
-    border-radius: 10px;
-    background-color: lightblue;
+    /* --near (0 far .. 1 near) is set on the parent each frame */
     position: absolute;
-    animation: counterOrbit 45s linear infinite;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transform: translate(-50%, -5px) scale(calc(0.86 + 0.14 * var(--near, 1)));
+    transform-origin: 50% 5px;
+    opacity: calc((0.5 + 0.5 * var(--near, 1)) * var(--emerge, 1));
+    text-decoration: none;
+    color: var(--starlight);
+    white-space: nowrap;
+    padding: 0 6px 6px;
+    /* Bodies can be dragged along their orbits: don't let touch scroll or select instead */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
-.orbital:hover .tab {
-    animation-play-state: paused;
+.tab--active {
+    cursor: grab;
+}
+
+.tab__star {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff8ec 0 30%, var(--core) 60%);
+    box-shadow:
+        0 0 6px 1px rgba(243, 197, 138, 0.7),
+        0 0 22px 4px rgba(243, 197, 138, 0.18);
+    transition: box-shadow 300ms ease, transform 300ms ease;
+}
+
+/* A ring around the star marks a group that opens its own orbit level */
+.tab--group .tab__star::after {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: -2px;
+    width: 30px;
+    height: 14px;
+    border: 1.25px solid rgba(243, 197, 138, 0.85);
+    border-radius: 50%;
+    transform: rotate(-12deg);
+}
+
+.tab__label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-shadow: 0 0 12px var(--void), 0 0 3px var(--void);
+}
+
+.tab__title {
+    font-family: var(--sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    transition: color 250ms ease;
+}
+
+.tab__title--short {
+    display: none;
+}
+
+.tab__kind {
+    font-size: var(--step--1);
+    color: var(--dust);
+    line-height: 1.3;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity 250ms ease, max-height 250ms ease;
+}
+
+.tab:hover .tab__title,
+.tab--active .tab__title {
+    color: var(--core);
+}
+
+.tab--active .tab__kind {
+    max-height: 1.4em;
+    opacity: 1;
+}
+
+.tab--active .tab__star {
+    transform: scale(1.35);
+    box-shadow:
+        0 0 8px 2px rgba(243, 197, 138, 0.9),
+        0 0 34px 8px rgba(243, 197, 138, 0.28);
+}
+
+@media (max-width: 640px) {
+    .tab__title {
+        font-size: 0.8125rem;
+    }
+    .tab__title--full {
+        display: none;
+    }
+    .tab__title--short {
+        display: inline;
+    }
+    .tab {
+        gap: 6px;
+    }
 }

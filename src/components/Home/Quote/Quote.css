@@ -1,19 +1,64 @@
+.quotes {
+    display: grid;
+    padding: 0 var(--gutter);
+    text-align: center;
+}
+
 .quote {
-    position: absolute;
-    left: 50%;
-    top: 90%;
-    transform: translate(-50%, -50%);
+    grid-area: 1 / 1;
+    align-self: center;
+    margin: 0 auto;
+    max-width: 60ch;
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(3px);
+    visibility: hidden;
+    transition:
+        opacity 900ms ease,
+        transform 900ms ease,
+        filter 900ms ease,
+        visibility 0s linear 900ms;
 }
 
-.text {
-    font-size: 2em;
-    color: skyblue;
-    text-align: center;
+.quote--current {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    visibility: visible;
+    transition-delay: 300ms, 300ms, 300ms, 0s;
 }
 
-.author {
+.quote__text {
+    margin: 0;
+    font-family: var(--serif);
+    font-variation-settings: var(--serif-text);
+    font-weight: 500;
     font-style: italic;
-    font-size: 1.5em;
-    color: deepskyblue;
-    text-align: center;
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+    line-height: 1.35;
+    color: var(--starlight);
+}
+
+.quote__text::before {
+    content: '\201C';
+}
+
+.quote__text::after {
+    content: '\201D';
+}
+
+.quote__author {
+    margin-top: 0.6em;
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    color: var(--dust);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quote,
+    .quote--current {
+        transform: none;
+        filter: none;
+        transition: none;
+    }
 }

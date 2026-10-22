@@ -1,0 +1,97 @@
+.index {
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    /* Soft-edged dark panel so the list reads clearly over the moving background */
+    background: rgba(4, 6, 11, 0.55);
+    box-shadow: 0 0 90px 70px rgba(4, 6, 11, 0.55);
+}
+
+.index__heading {
+    margin: 0 0 1.2rem;
+    font-family: var(--serif);
+    font-variation-settings: var(--serif-display);
+    font-weight: 500;
+    font-size: var(--step-2);
+    line-height: 1.2;
+}
+
+.index__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid rgba(152, 161, 184, 0.22);
+}
+
+.index__list li {
+    border-bottom: 1px solid rgba(152, 161, 184, 0.22);
+}
+
+/* Children of a group: indented, smaller, with lighter rules */
+.index__list--nested {
+    border-top: 1px solid rgba(152, 161, 184, 0.12);
+    margin-left: clamp(16px, 4vw, 40px);
+    padding-left: 18px;
+    border-left: 1px solid rgba(243, 197, 138, 0.35);
+}
+
+.index__list--nested li {
+    border-bottom-color: rgba(152, 161, 184, 0.12);
+}
+
+.index__list--nested li:last-child {
+    border-bottom: 0;
+}
+
+.index__list--nested .index__item {
+    padding: 0.8rem 0;
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) auto;
+}
+
+.index__list--nested .index__title {
+    font-size: 1.125rem;
+}
+
+.index__item {
+    display: grid;
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) auto;
+    gap: 6px 32px;
+    align-items: baseline;
+    padding: 1.15rem 0;
+    text-decoration: none;
+    color: var(--starlight);
+}
+
+.index__title {
+    font-family: var(--serif);
+    font-variation-settings: var(--serif-text);
+    font-weight: 500;
+    font-size: var(--step-1);
+    line-height: 1.25;
+    transition: color 250ms ease;
+}
+
+.index__desc {
+    color: var(--dust);
+    max-width: 52ch;
+}
+
+.index__dest {
+    font-size: var(--step--1);
+    color: var(--dust-dim);
+    white-space: nowrap;
+}
+
+.index__item:hover .index__title,
+.index__item:focus-visible .index__title {
+    color: var(--core);
+}
+
+@media (max-width: 720px) {
+    .index__item,
+    .index__list--nested .index__item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+}
