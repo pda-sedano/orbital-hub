@@ -9,12 +9,21 @@
 
 .masthead__name {
     margin: 0;
-    font-family: var(--serif);
-    font-variation-settings: var(--serif-display);
+    font-family: var(--display);
     font-size: var(--step-3);
     font-weight: 500;
     line-height: 0.95;
-    letter-spacing: -0.015em;
+    letter-spacing: 0.01em;
+}
+
+/* White to deep sky blue, top to bottom; falls back to plain starlight text. */
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+    .masthead__name {
+        background-image: linear-gradient(180deg, #ffffff 15%, #00bfff 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
 }
 
 .masthead__tagline {

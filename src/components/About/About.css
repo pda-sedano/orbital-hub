@@ -33,12 +33,11 @@
 
 .about__title {
     margin: 0.6em 0 0.5em;
-    font-family: var(--serif);
-    font-variation-settings: var(--serif-display);
-    font-weight: 500;
-    font-size: var(--step-3);
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.9rem, 1.2rem + 2.7vw, 3.4rem);
     line-height: 1;
-    letter-spacing: -0.015em;
+    letter-spacing: 0.01em;
 }
 
 .about__body {
@@ -61,11 +60,11 @@
 
 .about__body h2 {
     margin: 2.4em 0 0.8em;
-    font-family: var(--serif);
-    font-variation-settings: var(--serif-display);
-    font-weight: 500;
+    font-family: var(--display);
+    font-weight: 300;
     font-size: var(--step-2);
     line-height: 1.2;
+    letter-spacing: 0.01em;
     color: var(--starlight);
 }
 
