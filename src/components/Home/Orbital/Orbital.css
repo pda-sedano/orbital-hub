@@ -162,7 +162,9 @@
     will-change: transform;
 }
 
-/* Dragging: keep the body above everything and show the grab */
+/* Hovered, selected or dragged: keep the body (and its enlarged label) above the others */
+.orrery__body:has(.tab--active),
+.orrery__body:hover,
 .orrery__body[data-dragging='true'] {
     z-index: 6;
 }

@@ -55,12 +55,15 @@
     flex-direction: column;
     align-items: center;
     text-shadow: 0 0 12px var(--void), 0 0 3px var(--void);
+    /* Grows downward from its top edge on hover/press, so it never reaches the star above */
+    transform-origin: 50% 0;
+    transition: transform 250ms ease;
 }
 
 .tab__title {
     font-family: var(--sans);
-    font-size: 0.9375rem;
-    font-weight: 500;
+    font-size: 1.0625rem;
+    font-weight: 600;
     letter-spacing: 0.01em;
     line-height: 1.2;
     transition: color 250ms ease;
@@ -85,6 +88,12 @@
     color: var(--core);
 }
 
+.tab:hover .tab__label,
+.tab:active .tab__label,
+.tab--active .tab__label {
+    transform: scale(1.6);
+}
+
 .tab--active .tab__kind {
     max-height: 1.4em;
     opacity: 1;
@@ -99,7 +108,7 @@
 
 @media (max-width: 640px) {
     .tab__title {
-        font-size: 0.8125rem;
+        font-size: 0.9375rem;
     }
     .tab__title--full {
         display: none;
