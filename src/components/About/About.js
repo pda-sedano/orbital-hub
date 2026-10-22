@@ -11,20 +11,27 @@ const About = () => {
                 Back to the hub
             </Link>
 
-            <h1 className="about__title">About me</h1>
+            <h2 className="about__title">About me</h2>
 
             <div className="about__body">
                 <p className="about__lede">
-                    I'm Perrin. I have a BS in Physics from UNCA, and I'm interested in the
-                    intersection between physics, mathematics and computer science.
+                    Hi, my name is Perrin Alaine-Sedano. I'm a graduate of UNC Asheville in physics and an aspiring AI researcher.
+                    I'm also interested in the intersection between physics, mathematics and computer science.
+                </p>
+            </div>
+
+            <br/>
+            <br/>
+
+            <h2 className="about__title">About the site</h2>
+
+            <div className="about__body">
+                <p className="about__lede">
+                    The Orbital Hub has launched! This site is meant to be a central hub for all my projects.
+                    It's still a work in progress, so look out for collisions with space debris.
                 </p>
 
-                <p>
-                    I learn best by building things myself, so most of what you'll find here
-                    is me implementing ideas from scratch to see how they really work.
-                </p>
-
-                <h2>What I'm working on</h2>
+                {/* <h2>What I'm working on</h2>
                 <ul className="about__list">
                     {projects.map((p) => (
                         <li key={p.id}>
@@ -38,9 +45,9 @@ const About = () => {
                             <span>{p.description}</span>
                         </li>
                     ))}
-                </ul>
+                </ul> */}
 
-                <h2>Elsewhere</h2>
+                <h2>Quick Links</h2>
                 <ul className="about__profiles">
                     {profiles.map((p) => (
                         <li key={p.id}>

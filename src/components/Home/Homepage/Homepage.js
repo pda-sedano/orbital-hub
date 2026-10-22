@@ -3,7 +3,7 @@ import './Homepage.css';
 import Title from '../Title/Title';
 import Quote from '../Quote/Quote';
 import Orbital from '../Orbital/Orbital';
-import Index from '../Index/Index';
+// import Index from '../Index/Index';
 import { resolveTrail } from '../../../data/links';
 import { quotes, QUOTE_INTERVAL_MS } from '../../../data/quotes';
 
@@ -20,7 +20,7 @@ const Homepage = () => {
         <main className="homepage">
             <Title
                 name="Welcome to the Orbital Hub"
-                tagline="Physics, mathematics and computer science, and the places they meet. Everything I'm building is linked from here."
+                // tagline=""
             />
             <Orbital trail={trail} />
             <Quote quotes={quotes} intervalMs={QUOTE_INTERVAL_MS} />

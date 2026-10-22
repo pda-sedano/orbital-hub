@@ -16,55 +16,34 @@
 export const orbiting = [
     {
         id: 'about',
-        title: 'About me',
-        kind: 'Background and contact',
-        description: 'Who I am, what I studied and where to find me.',
-        to: '/about-me',
+        title: 'About',
+        // kind: 'Background and contact',
+        // description: 'Who I am, what I studied and where to find me.',
+        to: '/about',
         ring: 0,
     },
     {
         id: 'ml-from-scratch',
         title: 'Machine Learning from Scratch',
         short: 'ML from Scratch',
-        kind: 'Essay series',
         description:
             'Machine learning algorithms implemented with nothing but Python and NumPy, ' +
             'and written up step by step.',
         ring: 1,
-        children: [
-            {
-                id: 'series',
-                title: 'Series home',
-                kind: 'Every post in the series',
-                description: 'The full Machine Learning from Scratch series.',
-                href: 'https://pda-sedano.github.io/ml-from-scratch/',
-            },
-            {
-                id: 'neural-network',
-                title: 'Neural Network from Scratch',
-                short: 'Neural network',
-                kind: 'Latest post',
-                description: 'A feedforward neural network for MNIST, built with only NumPy.',
-                href: 'https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/',
-            },
-            {
-                id: 'medium',
-                title: 'On Medium',
-                kind: 'Where the series is published',
-                description: 'The series as it appears on Medium.',
-                href: 'https://medium.com/@pdasedano',
-            },
-        ],
+        href: 'https://pda-sedano.github.io/ml-from-scratch/',
     },
     {
         id: 'lambda',
         title: 'Lambda calculus interpreter',
         short: 'λ interpreter',
-        kind: 'Source code',
         description: 'An interpreter for the untyped lambda calculus.',
         href: 'https://github.com/pda-sedano/lambda-interpreter-web',
         ring: 2,
     },
+];
+
+export const header_links = [
+    { id: 'view_source', title: 'View on GitHub', href: 'https://github.com/pda-sedano/orbital-hub' },
 ];
 
 export const profiles = [

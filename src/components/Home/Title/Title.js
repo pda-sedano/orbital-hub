@@ -1,4 +1,4 @@
-import { profiles } from '../../../data/links';
+import { header_links } from '../../../data/links';
 import './Title.css';
 
 const Title = ({ name, tagline }) => {
@@ -8,8 +8,8 @@ const Title = ({ name, tagline }) => {
                 <h1 className="masthead__name">{name}</h1>
                 <p className="masthead__tagline">{tagline}</p>
             </div>
-            <nav className="masthead__nav" aria-label="Profiles">
-                {profiles.map((p) => (
+            <nav className="masthead__nav" aria-label="Header Links">
+                {header_links.map((p) => (
                     <a key={p.id} href={p.href} target="_blank" rel="noopener noreferrer">
                         {p.title}
                     </a>
