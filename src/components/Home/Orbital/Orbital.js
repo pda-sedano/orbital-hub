@@ -15,6 +15,7 @@ import {
     usedRings as ringsOf,
 } from './geometry';
 import { MINI_SCALE } from '../Tab/MiniOrbit';
+import { clock, bodyPath, getOffset, setOffset, saveOffsets } from './orbitState';
 import './Orbital.css';
 
 export { angleAt, buildBodies }; // re-exported for tests
@@ -29,7 +30,9 @@ export { angleAt, buildBodies }; // re-exported for tests
  * children, which spiral out of the galaxy, and a back arrow appears at the core.
  *
  * Bodies can be dragged along their orbits (or nudged with the arrow keys when
- * focused). Each body keeps an angular offset that is added to its orbit.
+ * focused). Each body keeps an angular offset that is added to its orbit; offsets
+ * and the orbital clock are shared site-wide (see orbitState.js), so a dragged body
+ * stays put across levels and reloads and the mini orbits show it in place.
  */
 
 const EMERGE_S = 1.1; // how long new bodies take to spiral out to their orbits
@@ -67,8 +70,8 @@ const Orbital = ({ trail = [] }) => {
     const [halfWidth, setHalfWidth] = useState(500);
     const [active, setActive] = useState(null); // id of the hovered/focused body
 
-    const ids = trail.map((g) => g.id);
-    const levelKey = ids.join('/');
+    const levelKey = trail.map((g) => g.id).join('/');
+    const ids = useMemo(() => (levelKey ? levelKey.split('/') : []), [levelKey]);
     const depth = trail.length;
     const group = trail[depth - 1];
     const items = group ? group.children : orbiting;
@@ -83,8 +86,7 @@ const Orbital = ({ trail = [] }) => {
             ),
         [items]
     );
-    const sim = useRef({ t: 0, emerge: 0, speed: 1, level: null, cameFrom: null });
-    const offsets = useRef({}); // body id -> extra angle from dragging, for this level
+    const sim = useRef({ emerge: 0, speed: 1, level: null, cameFrom: null });
     const drag = useRef(null); // the press or drag in progress, if any
     const geometry = useRef(geometryFor(halfWidth));
     geometry.current = geometryFor(halfWidth);
@@ -112,10 +114,8 @@ const Orbital = ({ trail = [] }) => {
         if (s.level === levelKey) return;
         s.cameFrom = s.level;
         s.level = levelKey;
-        s.t = 0;
         s.emerge = 0;
         s.speed = 1;
-        offsets.current = {};
         drag.current = null;
         setActive(null);
     }, [levelKey]);
@@ -165,8 +165,9 @@ const Orbital = ({ trail = [] }) => {
                 const el = bodyRefs.current[i];
                 if (!el) return;
                 const a = body.a * halfWidth * scale * (0.06 + 0.94 * e);
-                const offset = offsets.current[body.link.id] ?? 0;
-                const theta = body.phase + offset + body.omega * s.t - (1 - e) * 1.6;
+                const path = bodyPath([...ids, body.link.id]);
+                const theta =
+                    body.phase + getOffset(path) + body.omega * clock.t - (1 - e) * 1.6;
                 const { x, y, depth: z } = project(a, incl, theta);
                 el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
                 el.style.setProperty('--near', ((z + 1) / 2).toFixed(3));
@@ -177,7 +178,12 @@ const Orbital = ({ trail = [] }) => {
                 if (body.mini) {
                     const dots = el.querySelectorAll('.mini__body');
                     body.mini.forEach((m, j) => {
-                        const p = project(m.a * MINI_SCALE, incl, m.phase + m.omega * s.t);
+                        const childPath = bodyPath([...ids, body.link.id, m.link.id]);
+                        const p = project(
+                            m.a * MINI_SCALE,
+                            incl,
+                            m.phase + getOffset(childPath) + m.omega * clock.t
+                        );
                         const dot = dots[j];
                         if (!dot) return;
                         dot.setAttribute('cx', p.x.toFixed(2));
@@ -195,7 +201,7 @@ const Orbital = ({ trail = [] }) => {
             // Ease toward a stop while something is hovered, and ease back afterwards.
             const target = activeRef.current || drag.current?.dragging ? 0 : 1;
             s.speed += (target - s.speed) * Math.min(1, dt * 4);
-            s.t += dt * s.speed;
+            clock.t += dt * s.speed;
             s.emerge = Math.min(1, s.emerge + dt / EMERGE_S);
             place();
         };
@@ -204,17 +210,16 @@ const Orbital = ({ trail = [] }) => {
         s.place = place; // lets drag and key handlers redraw straight away
         if (!reduceMotion) raf = requestAnimationFrame(loop);
         return () => cancelAnimationFrame(raf);
-    }, [halfWidth, bodies]);
+    }, [halfWidth, bodies, ids]);
 
     // Point a body at the orbital angle `theta`, by adjusting its offset.
     const setBodyAngle = (body, theta) => {
-        const s = sim.current;
-        offsets.current[body.link.id] = theta - body.phase - body.omega * s.t;
-        s.place?.();
+        setOffset(bodyPath([...ids, body.link.id]), theta - body.phase - body.omega * clock.t);
+        sim.current.place?.();
     };
 
     const currentAngle = (body) =>
-        body.phase + (offsets.current[body.link.id] ?? 0) + body.omega * sim.current.t;
+        body.phase + getOffset(bodyPath([...ids, body.link.id])) + body.omega * clock.t;
 
     const onPointerDown = (body, e) => {
         if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -243,6 +248,7 @@ const Orbital = ({ trail = [] }) => {
         if (!d || d.id !== e.pointerId) return;
         delete e.currentTarget.dataset.dragging;
         if (d.dragging) {
+            saveOffsets();
             d.suppressClick = true; // the click that follows a drag shouldn't open the link
             // If no click arrives (touch, or released off the body), forget the drag anyway.
             setTimeout(() => {
@@ -271,6 +277,7 @@ const Orbital = ({ trail = [] }) => {
         e.preventDefault();
         sim.current.emerge = 1;
         setBodyAngle(body, currentAngle(body) + (forward ? KEY_STEP : -KEY_STEP));
+        saveOffsets();
     };
 
     const activeBody = bodies.find((b) => b.link.id === active);

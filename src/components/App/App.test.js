@@ -4,7 +4,17 @@ import App from './App';
 import Index from '../Home/Index/Index';
 import Quote from '../Home/Quote/Quote';
 import { step } from '../Home/backgrounds/Life/Life';
-import { buildBodies, angleAt, usedRings } from '../Home/Orbital/geometry';
+import { buildBodies, angleAt, usedRings, project } from '../Home/Orbital/geometry';
+import {
+    clock,
+    bodyPath,
+    getOffset,
+    setOffset,
+    saveOffsets,
+    resetOffsets,
+    _reloadFromStorage,
+} from '../Home/Orbital/orbitState';
+import { MINI_SCALE } from '../Home/Tab/MiniOrbit';
 import { orbiting, isGroup, resolveTrail, allLinks } from '../../data/links';
 
 const renderAt = (hash) => {
@@ -91,6 +101,29 @@ describe('hub', () => {
         expect(document.querySelectorAll('.orrery__body')).toHaveLength(group.children.length);
     });
 
+    groupTest('a dragged child shows up in its new place in the parent\'s mini orbit', () => {
+        const group = orbiting.find(isGroup);
+        const child = buildBodies(group.children)[0];
+        const path = bodyPath([group.id, child.link.id]);
+        setOffset(path, 2.0); // as if it had been dragged 2 radians along its orbit
+
+        renderAt('#/');
+        const stage = document.querySelector('.orrery__stage');
+        const incl = parseFloat(stage.style.getPropertyValue('--incl'));
+        const link = within(document.querySelector('.orrery__bodies')).getByRole('link', {
+            name: new RegExp(group.title),
+        });
+        const dot = link.querySelectorAll('.mini__body')[0];
+        const expected = project(
+            child.a * MINI_SCALE,
+            incl,
+            child.phase + 2.0 + child.omega * clock.t
+        );
+        expect(parseFloat(dot.getAttribute('cx'))).toBeCloseTo(expected.x, 1);
+        expect(parseFloat(dot.getAttribute('cy'))).toBeCloseTo(expected.y, 1);
+        resetOffsets();
+    });
+
     test('nested groups resolve two levels deep', () => {
         const deep = orbiting
             .filter(isGroup)
@@ -146,6 +179,40 @@ describe('tree helpers', () => {
         // inner rings orbit faster (Kepler's third law)
         const [inner, middle] = buildBodies(items);
         expect(inner.omega).toBeGreaterThan(middle.omega);
+    });
+});
+
+describe('dragged positions', () => {
+    afterEach(() => resetOffsets());
+
+    test('are kept per path and survive a reload', () => {
+        setOffset('a/b', 1.25);
+        setOffset('a/c', -0.5);
+        saveOffsets();
+        _reloadFromStorage(); // what a fresh page load does
+        expect(getOffset('a/b')).toBeCloseTo(1.25);
+        expect(getOffset('a/c')).toBeCloseTo(-0.5);
+        expect(getOffset('a/never-dragged')).toBe(0);
+    });
+
+    test('the orbital clock is saved with them, so a reload resumes the same configuration', () => {
+        clock.t = 123.5;
+        setOffset('a/b', 0.5);
+        saveOffsets();
+        clock.t = 0;
+        _reloadFromStorage();
+        expect(clock.t).toBeCloseTo(123.5);
+    });
+
+    test('wrap around instead of growing without bound', () => {
+        setOffset('x', 3 * Math.PI + 0.25);
+        expect(getOffset('x')).toBeCloseTo(-Math.PI + 0.25);
+    });
+
+    test('fall back to nothing if storage holds junk', () => {
+        window.localStorage.setItem('orbital-hub:orbit-offsets', 'not json');
+        _reloadFromStorage();
+        expect(getOffset('a/b')).toBe(0);
     });
 });
 
