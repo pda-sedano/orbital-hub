@@ -44,7 +44,7 @@ export const orbiting = [
                 title: 'Lambda calculus interpreter',
                 short: 'λ interpreter',
                 description: 'An interpreter for untyped lambda calculus.',
-                href: 'https://github.com/pda-sedano/lambda-interpreter-web',
+                href: 'https://pda-sedano.github.io/lambda-interpreter-web/',
                 ring: 0,
             },
             {
