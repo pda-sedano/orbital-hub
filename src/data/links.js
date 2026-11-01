@@ -34,35 +34,25 @@ export const orbiting = [
         href: 'https://pda-sedano.github.io/ml-from-scratch/',
     },
     {
-        id: 'lambda',
-        title: 'Lambda calculus interpreter',
-        short: 'λ interpreter',
-        description: 'An interpreter for the untyped lambda calculus.',
-        href: 'https://github.com/pda-sedano/lambda-interpreter-web',
-        ring: 2,
-    },
-
-    // TEST: exercises nesting and the mini orbits. Safe to delete.
-    // Its mini orbit should show two dots on the inner ring and one on the middle
-    // ring, matching what you see after clicking it.
-    {
-        id: 'test-system',
-        title: 'Test system',
+        id: 'aps',
+        title: 'Automated Program Synthesis',
+        short: 'Program Synthesis',
         ring: 2,
         children: [
-            { id: 'alpha', title: 'Alpha', ring: 0 },
-            { id: 'beta', title: 'Beta', ring: 0 },
             {
-                id: 'gamma',
-                title: 'Gamma system',
-                ring: 1,
-                children: [
-                    { id: 'gamma-i', title: 'Gamma I', ring: 0 },
-                    { id: 'gamma-ii', title: 'Gamma II', ring: 1 },
-                    { id: 'gamma-iii', title: 'Gamma III', ring: 2 },
-                    { id: 'gamma-iv', title: 'Gamma IV', ring: 2 },
-                ],
+                id: 'lambda',
+                title: 'Lambda calculus interpreter',
+                short: 'λ interpreter',
+                description: 'An interpreter for untyped lambda calculus.',
+                href: 'https://github.com/pda-sedano/lambda-interpreter-web',
+                ring: 0,
             },
+            {
+                id: 'br',
+                title: 'More coming soon...',
+                href: `${process.env.PUBLIC_URL}/busy-reaper.html`,
+                ring: 1,
+            }
         ],
     },
 ];
